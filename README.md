@@ -1,6 +1,6 @@
 # WP Dev Plugins Installer
 
-A curated development utility for quickly installing WordPress development plugins.
+A curated WordPress development toolkit for installing and activating commonly used development plugins.
 
 ## Requirements
 
@@ -9,25 +9,67 @@ A curated development utility for quickly installing WordPress development plugi
 
 ## Development presets
 
-- Core — Query Monitor, FakerPress
-- Theme — Query Monitor, FakerPress, Theme Check, What The File, Regenerate Thumbnails
-- Plugin — Query Monitor, FakerPress, Debug Bar
-- Content — Query Monitor, FakerPress, Custom Post Type UI, Regenerate Thumbnails, Contact Form 7
-- Legacy — Query Monitor, FakerPress, Classic Editor, Disable Customizer
+| Preset | Plugins |
+| --- | --- |
+| Core | Query Monitor, FakerPress |
+| Theme | Query Monitor, FakerPress, Theme Check, What The File, Regenerate Thumbnails |
+| Plugin | Query Monitor, FakerPress, Debug Bar |
+| Content | Query Monitor, FakerPress, Custom Post Type UI, Regenerate Thumbnails, Contact Form 7 |
+| Legacy | Query Monitor, FakerPress, Classic Editor, Disable Customizer |
 
-Presets are a curated starting point; plugins are not WordPress dependencies.
+Presets are starting points. Every plugin can also be selected manually.
 
-## Installation
+## Workflow
 
-Copy the plugin to the WordPress plugins directory and activate it from the WordPress admin.
+1. Activate **WP Dev Plugins Installer**.
+2. Open **Tools → Dev Plugins**.
+3. Choose a preset or select plugins manually.
+4. Review each plugin's installation/activation status.
+5. Click **Install & Activate Selected**.
 
-The installer is intended for development environments.
+The installer never treats development plugins as WordPress dependencies and does not automatically install or activate them on plugin activation.
 
 ## Architecture
 
-The plugin catalog lives in config/plugins.php, presets live in src/Presets.php, and TGMPA integration is isolated in src/PluginInstaller.php.
+```
+plugin-installer.php
+├── config/
+│   └── plugins.php
+├── src/
+│   ├── AdminPage.php
+│   ├── Plugin.php
+│   ├── PluginCatalog.php
+│   ├── PluginInstaller.php
+│   └── Presets.php
+├── tests/
+├── includes/
+│   └── class-tgm-plugin-activation.php
+└── .github/
+    └── workflows/
+        └── tests.yml
+```
 
-The bundled TGMPA library is third-party code and is intentionally kept separate from the plugin's application code.
+Application code uses the `WPDevPlugins` namespace and PSR-4 autoloading. The installer uses WordPress' native plugin API and `Plugin_Upgrader`.
+
+## Development
+
+Install Composer dependencies:
+
+```bash
+composer install
+```
+
+Run PHPUnit:
+
+```bash
+composer test
+```
+
+Run WordPress Coding Standards:
+
+```bash
+composer lint
+```
 
 ## License
 
