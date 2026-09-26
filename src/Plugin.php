@@ -14,5 +14,6 @@ final class Plugin {
         require_once __DIR__ . '/../includes/class-tgm-plugin-activation.php';
 
         PluginInstaller::register();
+        AdminPage::register();
     }
 }
