@@ -38,13 +38,13 @@ final class PluginInstaller {
     }
 
     public static function is_installed( string $slug ): bool {
-        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        self::load_plugin_api();
 
         return null !== self::find_plugin_file( $slug );
     }
 
     public static function is_active( string $slug ): bool {
-        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        self::load_plugin_api();
 
         $file = self::find_plugin_file( $slug );
 
@@ -52,9 +52,8 @@ final class PluginInstaller {
     }
 
     public static function install_and_activate( array $slugs ): array {
+        self::load_plugin_api();
         require_once ABSPATH . 'wp-admin/includes/file.php';
-        require_once ABSPATH . 'wp-admin/includes/plugin.php';
-        require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
         require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 
         $success = [];
@@ -64,20 +63,9 @@ final class PluginInstaller {
             return compact( 'success', 'errors' );
         }
 
-        $method = get_filesystem_method();
-
-        if ( 'direct' !== $method ) {
+        if ( 'direct' !== get_filesystem_method() || ! WP_Filesystem() ) {
             $errors[] = __(
-                'Instalacija zahteva direktan filesystem pristup. Podesite odgovarajući filesystem metod ili koristite TGMPA ekran za ručnu instalaciju.',
-                'wp-dev-plugins-installer'
-            );
-
-            return compact( 'success', 'errors' );
-        }
-
-        if ( ! WP_Filesystem() ) {
-            $errors[] = __(
-                'Nije moguće uspostaviti direktan pristup filesystemu.',
+                'Instalacija zahteva direktan filesystem pristup. Za FTP/SSH okruženja koristite TGMPA ekran za ručnu instalaciju.',
                 'wp-dev-plugins-installer'
             );
 
@@ -145,6 +133,11 @@ final class PluginInstaller {
         }
 
         return compact( 'success', 'errors' );
+    }
+
+    private static function load_plugin_api(): void {
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
     }
 
     private static function find_plugin_file( string $slug ): ?string {
