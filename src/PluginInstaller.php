@@ -40,30 +40,21 @@ final class PluginInstaller {
     public static function is_installed( string $slug ): bool {
         require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
-        foreach ( get_plugins() as $file => $plugin ) {
-            if ( dirname( $file ) === $slug || basename( $file, '.php' ) === $slug ) {
-                return true;
-            }
-        }
-
-        return false;
+        return null !== self::find_plugin_file( $slug );
     }
 
     public static function is_active( string $slug ): bool {
         require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
-        foreach ( get_plugins() as $file => $plugin ) {
-            if ( dirname( $file ) === $slug || basename( $file, '.php' ) === $slug ) {
-                return is_plugin_active( $file );
-            }
-        }
+        $file = self::find_plugin_file( $slug );
 
-        return false;
+        return $file ? is_plugin_active( $file ) : false;
     }
 
     public static function install_and_activate( array $slugs ): array {
         require_once ABSPATH . 'wp-admin/includes/file.php';
         require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
         require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 
         $success = [];
@@ -73,16 +64,22 @@ final class PluginInstaller {
             return compact( 'success', 'errors' );
         }
 
-        if ( ! request_filesystem_credentials( admin_url( 'tools.php?page=wp-dev-plugins' ), '', false, false, null ) ) {
-            $errors[] = __( 'WordPress zahteva FTP/SSH kredencijale za instalaciju pluginova. Pokušajte ponovo sa direktnim filesystem pristupom.', 'wp-dev-plugins-installer' );
+        $method = get_filesystem_method();
+
+        if ( 'direct' !== $method ) {
+            $errors[] = __(
+                'Instalacija zahteva direktan filesystem pristup. Podesite odgovarajući filesystem metod ili koristite TGMPA ekran za ručnu instalaciju.',
+                'wp-dev-plugins-installer'
+            );
 
             return compact( 'success', 'errors' );
         }
 
-        $credentials = request_filesystem_credentials( admin_url( 'tools.php?page=wp-dev-plugins' ), '', false, false, null );
-
-        if ( ! WP_Filesystem( $credentials ) ) {
-            $errors[] = __( 'Nije moguće uspostaviti pristup filesystemu.', 'wp-dev-plugins-installer' );
+        if ( ! WP_Filesystem() ) {
+            $errors[] = __(
+                'Nije moguće uspostaviti direktan pristup filesystemu.',
+                'wp-dev-plugins-installer'
+            );
 
             return compact( 'success', 'errors' );
         }
@@ -106,17 +103,23 @@ final class PluginInstaller {
                 );
 
                 if ( is_wp_error( $api ) || empty( $api->download_link ) ) {
-                    $errors[] = sprintf( __( '%s: nije moguće pronaći download paket.', 'wp-dev-plugins-installer' ), $plugin['name'] );
+                    $errors[] = sprintf(
+                        __( '%s: nije moguće pronaći download paket.', 'wp-dev-plugins-installer' ),
+                        $plugin['name']
+                    );
 
                     continue;
                 }
 
-                $skin    = new Automatic_Upgrader_Skin();
+                $skin     = new \Automatic_Upgrader_Skin();
                 $upgrader = new \Plugin_Upgrader( $skin );
                 $installed = $upgrader->install( $api->download_link );
 
                 if ( ! $installed || is_wp_error( $installed ) ) {
-                    $errors[] = sprintf( __( '%s: instalacija nije uspela.', 'wp-dev-plugins-installer' ), $plugin['name'] );
+                    $errors[] = sprintf(
+                        __( '%s: instalacija nije uspela.', 'wp-dev-plugins-installer' ),
+                        $plugin['name']
+                    );
 
                     continue;
                 }
@@ -128,7 +131,11 @@ final class PluginInstaller {
                 $activation = activate_plugin( $file );
 
                 if ( is_wp_error( $activation ) ) {
-                    $errors[] = sprintf( __( '%s: aktivacija nije uspela — %s', 'wp-dev-plugins-installer' ), $plugin['name'], $activation->get_error_message() );
+                    $errors[] = sprintf(
+                        __( '%s: aktivacija nije uspela — %s', 'wp-dev-plugins-installer' ),
+                        $plugin['name'],
+                        $activation->get_error_message()
+                    );
 
                     continue;
                 }
