@@ -1,0 +1,19 @@
+{
+    "name": "bogec986/wp-dev-plugins-installer",
+    "description": "Curated development plugin installer for WordPress.",
+    "type": "wordpress-plugin",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "WPDevPlugins\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WPDevPlugins\\Tests\\": "tests/"
+        }
+    }
+}
