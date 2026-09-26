@@ -23,26 +23,44 @@ final class AdminPage {
             wp_die( esc_html__( 'Nemate dozvolu za ovu akciju.', 'wp-dev-plugins-installer' ) );
         }
 
-        $catalog = PluginCatalog::all();
-        $preset  = isset( $_GET['preset'] ) ? sanitize_key( wp_unslash( $_GET['preset'] ) ) : 'core';
+        $catalog  = PluginCatalog::all();
+        $preset   = isset( $_GET['preset'] ) ? sanitize_key( wp_unslash( $_GET['preset'] ) ) : 'core';
         $selected = Presets::exists( $preset ) ? Presets::get( $preset ) : Presets::get( 'core' );
 
         if ( isset( $_GET['installed'] ) ) {
-            self::render_notice( 'success', __( 'Izabrani pluginovi su obrađeni.', 'wp-dev-plugins-installer' ) );
+            self::render_notice(
+                'success',
+                __( 'Izabrani pluginovi su obrađeni.', 'wp-dev-plugins-installer' )
+            );
         }
 
         if ( isset( $_GET['error'] ) ) {
-            self::render_notice( 'error', sanitize_text_field( wp_unslash( $_GET['error'] ) ) );
+            self::render_notice(
+                'error',
+                sanitize_text_field( wp_unslash( $_GET['error'] ) )
+            );
         }
 
         ?>
         <div class="wrap">
             <h1><?php echo esc_html__( 'WP Dev Plugins', 'wp-dev-plugins-installer' ); ?></h1>
-            <p><?php echo esc_html__( 'Izaberite development preset ili ručno označite pluginove koje želite da instalirate i aktivirate.', 'wp-dev-plugins-installer' ); ?></p>
+
+            <p>
+                <?php
+                echo esc_html__(
+                    'Izaberite development preset ili ručno označite pluginove koje želite da instalirate i aktivirate.',
+                    'wp-dev-plugins-installer'
+                );
+                ?>
+            </p>
 
             <form method="get" style="margin: 20px 0;">
                 <input type="hidden" name="page" value="wp-dev-plugins">
-                <label for="wp-dev-plugins-preset"><strong><?php echo esc_html__( 'Preset', 'wp-dev-plugins-installer' ); ?></strong></label>
+
+                <label for="wp-dev-plugins-preset">
+                    <strong><?php echo esc_html__( 'Preset', 'wp-dev-plugins-installer' ); ?></strong>
+                </label>
+
                 <select id="wp-dev-plugins-preset" name="preset" onchange="this.form.submit()">
                     <?php foreach ( array_keys( Presets::all() ) as $name ) : ?>
                         <option value="<?php echo esc_attr( $name ); ?>" <?php selected( $preset, $name ); ?>>
@@ -87,7 +105,9 @@ final class AdminPage {
                                 </td>
                                 <td>
                                     <?php if ( $active ) : ?>
-                                        <span style="color:#008a20;"><?php echo esc_html__( 'Aktivan', 'wp-dev-plugins-installer' ); ?></span>
+                                        <span style="color: #008a20;">
+                                            <?php echo esc_html__( 'Aktivan', 'wp-dev-plugins-installer' ); ?>
+                                        </span>
                                     <?php elseif ( $installed ) : ?>
                                         <?php echo esc_html__( 'Instaliran', 'wp-dev-plugins-installer' ); ?>
                                     <?php else : ?>
@@ -99,7 +119,7 @@ final class AdminPage {
                     </tbody>
                 </table>
 
-                <?php submit_button( __( 'Install & Activate Selected', 'wp-dev-plugins-installer' ) ); ?>
+                <?php submit_button( __( 'Instaliraj i aktiviraj izabrane', 'wp-dev-plugins-installer' ) ); ?>
             </form>
         </div>
         <?php
