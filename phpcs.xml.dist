@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<ruleset name="WP Dev Plugins Installer">
+    <description>PHP_CodeSniffer rules for WP Dev Plugins Installer.</description>
+    <file>plugin-installer.php</file>
+    <file>src</file>
+    <file>tests</file>
+    <exclude-pattern>includes/class-tgm-plugin-activation.php</exclude-pattern>
+    <exclude-pattern>vendor</exclude-pattern>
+    <rule ref="WordPress"/>
+</ruleset>
