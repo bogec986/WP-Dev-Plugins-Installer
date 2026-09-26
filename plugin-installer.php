@@ -16,6 +16,23 @@ $autoload = __DIR__ . '/vendor/autoload.php';
 
 if ( is_readable( $autoload ) ) {
     require_once $autoload;
+} else {
+    spl_autoload_register(
+        static function ( string $class ): void {
+            $prefix = 'WPDevPlugins\\';
+
+            if ( 0 !== strpos( $class, $prefix ) ) {
+                return;
+            }
+
+            $relative = substr( $class, strlen( $prefix ) );
+            $file     = __DIR__ . '/src/' . str_replace( '\\', '/', $relative ) . '.php';
+
+            if ( is_readable( $file ) ) {
+                require_once $file;
+            }
+        }
+    );
 }
 
 if ( class_exists( '\WPDevPlugins\Plugin' ) ) {
