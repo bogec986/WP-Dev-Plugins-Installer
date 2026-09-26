@@ -6,37 +6,6 @@ defined( 'ABSPATH' ) || exit;
 
 final class PluginInstaller {
 
-    public static function register(): void {
-        add_action( 'tgmpa_register', [ self::class, 'register_plugins' ] );
-    }
-
-    public static function register_plugins(): void {
-        $plugins = [];
-
-        foreach ( PluginCatalog::all() as $plugin ) {
-            $plugins[] = [
-                'name'     => $plugin['name'],
-                'slug'     => $plugin['slug'],
-                'required' => false,
-            ];
-        }
-
-        tgmpa(
-            $plugins,
-            [
-                'id'           => 'wp-dev-plugins-installer',
-                'default_path' => '',
-                'menu'         => 'wp-dev-plugins-tgmpa',
-                'parent_slug'  => 'tools.php',
-                'has_notices'  => true,
-                'dismissable'  => true,
-                'dismiss_msg'  => '',
-                'is_automatic' => false,
-                'message'      => '',
-            ]
-        );
-    }
-
     public static function is_installed( string $slug ): bool {
         self::load_plugin_api();
 
@@ -65,7 +34,7 @@ final class PluginInstaller {
 
         if ( 'direct' !== get_filesystem_method() || ! WP_Filesystem() ) {
             $errors[] = __(
-                'Instalacija zahteva direktan filesystem pristup. Za FTP/SSH okruženja koristite TGMPA ekran za ručnu instalaciju.',
+                'Instalacija zahteva direktan filesystem pristup. Ako koristite FTP/SSH, potrebno je da pluginove instalirate ručno.',
                 'wp-dev-plugins-installer'
             );
 
