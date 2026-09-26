@@ -42,8 +42,6 @@ plugin-installer.php
 │   ├── PluginInstaller.php
 │   └── Presets.php
 ├── tests/
-├── includes/
-│   └── class-tgm-plugin-activation.php
 └── .github/
     └── workflows/
         └── tests.yml
