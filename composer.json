@@ -1,0 +1,29 @@
+{
+    "name": "bogec986/wp-dev-plugins-installer",
+    "description": "Curated development plugin installer for WordPress.",
+    "type": "wordpress-plugin",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5",
+        "wp-coding-standards/wpcs": "^3.1",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "WPDevPlugins\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WPDevPlugins\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "lint": "phpcs",
+        "lint:fix": "phpcbf"
+    }
+}
