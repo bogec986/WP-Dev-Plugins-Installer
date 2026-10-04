@@ -7,6 +7,11 @@ defined( 'ABSPATH' ) || exit;
 final class AdminPage {
 
     public static function register(): void {
+        add_action( 'admin_menu', [ self::class, 'add_menu_page' ] );
+        add_action( 'admin_post_wp_dev_plugins_install', [ self::class, 'install_selected' ] );
+    }
+
+    public static function add_menu_page(): void {
         add_management_page(
             __( 'Dev Plugins', 'wp-dev-plugins-installer' ),
             __( 'Dev Plugins', 'wp-dev-plugins-installer' ),
@@ -14,8 +19,6 @@ final class AdminPage {
             'wp-dev-plugins',
             [ self::class, 'render' ]
         );
-
-        add_action( 'admin_post_wp_dev_plugins_install', [ self::class, 'install_selected' ] );
     }
 
     public static function render(): void {
